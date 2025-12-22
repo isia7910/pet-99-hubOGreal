@@ -1,22 +1,31 @@
--- SCRIPT: ĐỒ TỂ CLICK COIN (LUAU) --
--- Vibe: Vả sạch coin như cách mày vả đứa ép ăn chay bằng mồm 😭🥊 --
+-- SCRIPT: ĐỒ TỂ COIN GÓC NHÌN THỨ 3 (LUAU) --
+-- Vibe: Vả sạch coin từ xa như cách mày nhìn crush từ phía sau 😭💔 --
 
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local remote = ReplicatedStorage.Network.Click
+local camera = workspace.CurrentCamera
 
--- [CÀI ĐẶT NHÂN PHẨM] --
-local waitTime = 0.1 -- Tốc độ vả (0.1 là vừa đẹp, đừng ham 0.01 dễ bay acc)
+-- [THÔNG TIN MÀY CẦN CHECK] --
+local coinFolder = workspace:WaitForChild("Coins") -- Thay "Coins" bằng tên Folder chứa Coin của mày
 
-print("Đang khởi động Script... Chuẩn bị húp 2k máu mỗi hit! 🤡")
+print("Script 'Pháp sư góc nhìn thứ 3' đã lên nòng! 🤡")
 
-while task.wait(waitTime) do
-    -- Game này nó yêu cầu gửi 1 cái 'Ray' (Tia quét)
-    -- Tao sẽ tạo một cái tia ảo từ đầu mày hướng xuống đất để 'đánh lừa' hệ thống
-    local p = game.Players.LocalPlayer.Character.PrimaryPart.Position
-    local fakeRay = Ray.new(p, Vector3.new(0, -10, 0))
+while task.wait(0.1) do
+    local playerPos = game.Players.LocalPlayer.Character.PrimaryPart.Position
     
-    -- Bơm lệnh lên Server
-    remote:FireServer(fakeRay)
-    
-    -- print("Đang vả coin bằng tia ảo... Vibe liêm khiết vcl! ✨")
+    for _, coin in pairs(coinFolder:GetChildren()) do
+        -- Kiểm tra xem cái Coin có gần mày không (Bán kính 50 mét)
+        local coinPos = (coin:IsA("Model") and coin.PrimaryPart or coin).Position
+        if (coinPos - playerPos).Magnitude < 50 then
+            
+            -- TẠO TIA TỪ CAMERA ĐẾN COIN (Góc nhìn thứ 3 chuẩn bài)
+            local origin = camera.CFrame.Position
+            local direction = (coinPos - origin).Unit * 100
+            local fakeRay = Ray.new(origin, direction)
+            
+            -- Bơm lệnh 'vả' lên Server
+            remote:FireServer(fakeRay)
+            -- print("Đang vả Coin: " .. coin.Name .. " từ xa! ✨")
+        end
+    end
 end
